@@ -70,12 +70,7 @@ public class GameScreen implements Screen
 		Runnable load = () -> 
 		{
 			Gdx.app.log("Wait", "Loading");
-			try {
-				Thread.sleep(10000);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
-			
+						
 			Runnable json = () ->
 			{
 				JsonReader reader = new JsonReader();
@@ -93,24 +88,25 @@ public class GameScreen implements Screen
 					{
 						JsonValue barrier = indiLevel.get(barrierC);
 						
-						String type = barrier.getString("btype");
+						int type = barrier.getInt("btype");
 						int x = barrier.getInt("x");
 						int y = barrier.getInt("y");
+						System.out.println("Type: " + type + ", x: " + x + ", y: " +y);
 						
 						switch(type)
 						{
-							case "reflect":
+							case 1:
 							{
 								levelArray[level].addBarrier(new Reflector(x,y,10,10));
 								break;
 							}
-							case "refract":
+							case 2: 
 							{
-								
+								break;
 							}
-							case "stick":
+							case 3:
 							{
-								
+								break;
 							}
 						}
 					}
@@ -118,6 +114,7 @@ public class GameScreen implements Screen
 					levelArray[level].createGoal(new Goal(goal.getInt("x"), goal.getInt("y"), 10, 10));
 				}
 				ScreenManager.setScreen(new GameScreen());
+				System.out.println("New screen");
 			};
 			Gdx.app.postRunnable(json);
 		};
@@ -140,11 +137,13 @@ public class GameScreen implements Screen
 	public void render()
 	{
         clampCamera();        
-        
+        System.out.println("rendering");
         batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		for(int levelOn = 0; levelOn < levelArray.length; levelOn++)
 		{
+			levelArray[levelOn].initialDraw(batch);
+			
 			while(!levelArray[levelOn].isDone())
 				levelArray[levelOn].draw(batch);
 			
